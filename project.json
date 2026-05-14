@@ -1,0 +1,24 @@
+{
+  "overview": "A premium secure digital marketplace for project listings where users browse, purchase, and download digital products via manual payment verification (JazzCash/ABL). Features a hidden admin panel, role-based access, secure expiring downloads, and a beautiful dark/light UI.",
+  "features": [
+    "Browse and search digital products/projects",
+    "Cart and checkout with JazzCash/ABL payment proof upload",
+    "Order status tracking (Pending / Approved / Rejected)",
+    "Secure authenticated downloads with 24-hour expiry",
+    "Hidden admin panel for payment verification and order approval",
+    "Role-based access control (admin vs user)",
+    "Dark/light mode toggle",
+    "Responsive premium UI with animations"
+  ],
+  "category": "marketplace",
+  "tags": [
+    "marketplace",
+    "digital-products",
+    "ecommerce",
+    "admin-panel",
+    "secure-downloads",
+    "payment-verification",
+    "dark-mode"
+  ],
+  "last_updated": "2026-05-14T04:41:46.243Z"
+}

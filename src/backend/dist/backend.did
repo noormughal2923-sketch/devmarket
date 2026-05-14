@@ -1,0 +1,143 @@
+type _ImmutableObjectStorageRefillResult = 
+ record {
+   success: opt bool;
+   topped_up_amount: opt nat;
+ };
+type _ImmutableObjectStorageRefillInformation = record {
+                                                  proposed_top_up_amount:
+                                                   opt nat;};
+type _ImmutableObjectStorageCreateCertificateResult = 
+ record {
+   blob_hash: text;
+   method: text;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type UserProfile = 
+ record {
+   createdAt: Timestamp;
+   displayName: text;
+   isBlocked: bool;
+ };
+type Timestamp = int;
+type ProductView = 
+ record {
+   category: ProductCategory;
+   createdAt: Timestamp;
+   description: text;
+   fileStorageBlob: opt ExternalBlob;
+   id: ProductId;
+   isActive: bool;
+   previewImageBlob: opt ExternalBlob;
+   priceUsd: nat;
+   tags: vec text;
+   title: text;
+ };
+type ProductId = nat;
+type ProductCategory = 
+ variant {
+   MobileApp;
+   Plugin;
+   Script;
+   Template;
+   WebApp;
+ };
+type PaymentMethod = 
+ variant {
+   ABL;
+   JazzCash;
+ };
+type OrderView = 
+ record {
+   buyerPrincipal: principal;
+   createdAt: Timestamp;
+   id: OrderId;
+   paymentMethod: PaymentMethod;
+   paymentProofBlob: opt ExternalBlob;
+   productId: ProductId;
+   rejectionReason: opt text;
+   status: OrderStatus;
+   updatedAt: Timestamp;
+ };
+type OrderStatus = 
+ variant {
+   Approved;
+   PendingVerification;
+   Rejected;
+ };
+type OrderId = nat;
+type ExternalBlob = blob;
+type DownloadTokenView = 
+ record {
+   downloadCount: nat;
+   expiresAt: Timestamp;
+   id: DownloadTokenId;
+   isUsed: bool;
+   orderId: OrderId;
+   token: text;
+ };
+type DownloadTokenId = nat;
+type AuditLogId = nat;
+type AdminAuditLog = 
+ record {
+   action: text;
+   adminPrincipal: principal;
+   details: text;
+   id: AuditLogId;
+   targetId: opt text;
+   timestamp: Timestamp;
+ };
+service : {
+  _immutableObjectStorageBlobsAreLive: (hashes: vec blob) -> (vec bool) query;
+  _immutableObjectStorageBlobsToDelete: () -> (vec blob) query;
+  _immutableObjectStorageConfirmBlobDeletion: (blobs: vec blob) -> ();
+  _immutableObjectStorageCreateCertificate: (blobHash: text) ->
+   (_ImmutableObjectStorageCreateCertificateResult);
+  _immutableObjectStorageRefillCashier: (refillInformation:
+   opt _ImmutableObjectStorageRefillInformation) ->
+   (_ImmutableObjectStorageRefillResult);
+  _immutableObjectStorageUpdateGatewayPrincipals: () -> ();
+  _initializeAccessControl: () -> ();
+  adminApproveOrder: (orderId: OrderId) -> (text);
+  adminCreateProduct: (title: text, description: text, priceUsd: nat,
+   category: ProductCategory, tags: vec text, previewImageBlob:
+   opt ExternalBlob, fileStorageBlob: opt ExternalBlob) -> (ProductId);
+  adminDashboardStats: () ->
+   (record {
+      approvedOrders: nat;
+      pendingOrders: nat;
+      totalOrders: nat;
+      totalProducts: nat;
+      totalUsers: nat;
+    }) query;
+  adminGetUserProfile: (user: principal) -> (opt UserProfile) query;
+  adminListAuditLogs: () -> (vec AdminAuditLog) query;
+  adminListOrders: () -> (vec OrderView) query;
+  adminRejectOrder: (orderId: OrderId, reason: text) -> ();
+  adminSeedProducts: () -> ();
+  adminSetProductActive: (id: ProductId, isActive: bool) -> ();
+  adminSetUserBlocked: (user: principal, blocked: bool) -> ();
+  adminUpdateProduct: (id: ProductId, title: text, description: text,
+   priceUsd: nat, category: ProductCategory, tags: vec text,
+   previewImageBlob: opt ExternalBlob, fileStorageBlob: opt ExternalBlob) ->
+   ();
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  getCallerUserProfile: () -> (opt UserProfile) query;
+  getCallerUserRole: () -> (UserRole) query;
+  getOrder: (id: OrderId) -> (opt OrderView) query;
+  getProduct: (id: ProductId) -> (opt ProductView) query;
+  isCallerAdmin: () -> (bool) query;
+  listMyDownloadTokens: () -> (vec DownloadTokenView) query;
+  listMyOrders: () -> (vec OrderView) query;
+  listProducts: () -> (vec ProductView) query;
+  placeOrder: (productId: ProductId, paymentMethod: PaymentMethod,
+   paymentProofBlob: opt ExternalBlob) -> (OrderId);
+  redeemDownloadToken: (token: text) -> (opt ExternalBlob);
+  saveCallerUserProfile: (profile: UserProfile) -> ();
+  submitPaymentProof: (orderId: OrderId, paymentProofBlob: ExternalBlob) ->
+   ();
+}

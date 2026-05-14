@@ -1,0 +1,112 @@
+// Version: 1.0.0
+type AdminAuditLog__887059021 =
+  {
+    action : Text;
+    adminPrincipal : Principal;
+    details : Text;
+    id : AuditLogId__176736089;
+    targetId : ?Text;
+    timestamp : Timestamp__301639476
+  };
+type AuditLogId__176736089 = Nat;
+type Data__791452850<K, V> =
+  {var count : Nat__490723111; kvs : [var ?(K, V)]};
+type DownloadTokenId__729212126 = Nat;
+type DownloadToken__1052780463 =
+  {
+    var downloadCount : Nat;
+    expiresAt : Timestamp__301639476;
+    id : DownloadTokenId__729212126;
+    var isUsed : Bool;
+    orderId : OrderId__197865225;
+    token : Text
+  };
+type ExternalBlob__671167343 = Blob;
+type Internal__8484328<K, V> =
+  {children : [var ?Node__46230540<K, V>]; data : Data__791452850<K, V>};
+type Leaf__809889148<K, V> = {data : Data__791452850<K, V>};
+type Map__158565046<K, V> = Map__297112838<K, V>;
+type Map__297112838<K, V> =
+  {var root : Node__46230540<K, V>; var size : Nat__490723111};
+type Map__605269027<K, V> = Map__158565046<K, V>;
+type Nat__490723111 = Nat__920180692;
+type Nat__920180692 = Nat;
+type Node__46230540<K, V> =
+  {#internal : Internal__8484328<K, V>; #leaf : Leaf__809889148<K, V>};
+type OrderId__197865225 = Nat;
+type OrderStatus__393009242 = {#Approved; #PendingVerification; #Rejected};
+type Order__308187248 =
+  {
+    buyerPrincipal : Principal;
+    createdAt : Timestamp__301639476;
+    id : OrderId__197865225;
+    paymentMethod : PaymentMethod__46913440;
+    paymentProofBlob : ?ExternalBlob__671167343;
+    productId : ProductId__160010635;
+    var rejectionReason : ?Text;
+    var status : OrderStatus__393009242;
+    var updatedAt : Timestamp__301639476
+  };
+type PaymentMethod__46913440 = {#ABL; #JazzCash};
+type ProductCategory__978907055 =
+  {#MobileApp; #Plugin; #Script; #Template; #WebApp};
+type ProductId__160010635 = Nat;
+type Product__787231858 =
+  {
+    category : ProductCategory__978907055;
+    createdAt : Timestamp__301639476;
+    description : Text;
+    fileStorageBlob : ?ExternalBlob__671167343;
+    id : ProductId__160010635;
+    var isActive : Bool;
+    previewImageBlob : ?ExternalBlob__671167343;
+    priceUsd : Nat;
+    tags : [Text];
+    title : Text
+  };
+type Timestamp__301639476 = Int;
+type UserProfile__93964565 =
+  {createdAt : Timestamp__301639476; displayName : Text; isBlocked : Bool};
+type UserRole__1073662873 = {#admin; #guest; #user};
+actor {
+  stable accessControlState :
+    {
+      var adminAssigned : Bool;
+      userRoles : Map__605269027<Principal, UserRole__1073662873>
+    };
+  stable auditLogs :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?AdminAuditLog__887059021]];
+      var elementIndex : Nat__490723111
+    };
+  stable downloadTokens :
+    {
+      var root :
+        Node__46230540<DownloadTokenId__729212126, DownloadToken__1052780463>;
+      var size : Nat__490723111
+    };
+  stable orders :
+    {
+      var root : Node__46230540<OrderId__197865225, Order__308187248>;
+      var size : Nat__490723111
+    };
+  stable products :
+    {
+      var root : Node__46230540<ProductId__160010635, Product__787231858>;
+      var size : Nat__490723111
+    };
+  stable state :
+    {
+      var isSeeded : Bool;
+      var nextLogId : Nat;
+      var nextOrderId : Nat;
+      var nextProductId : Nat;
+      var nextTokenId : Nat
+    };
+  stable userProfiles :
+    {
+      var root : Node__46230540<Principal, UserProfile__93964565>;
+      var size : Nat__490723111
+    }
+};
